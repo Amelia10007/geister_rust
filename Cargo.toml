@@ -9,5 +9,4 @@ edition = "2018"
 [dependencies]
 cui_gaming = {path = "../cui_gaming"}
 data_structure = {path = "../data_structure"}
-geometry = {path = "../geometry"}
 minimax_strategy = {path = "../minimax_strategy"}

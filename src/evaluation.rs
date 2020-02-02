@@ -9,7 +9,7 @@ pub struct GeisterEvaluator {}
 impl Evaluator<GeisterState> for GeisterEvaluator {
     type Evaluation = GeisterEvaluation;
 
-    fn evaluate_for_agent(&self, state: &GeisterState) -> Self::Evaluation {
+    fn evaluate_for_agent(&self, _state: &GeisterState) -> Self::Evaluation {
         unimplemented!()
     }
 }

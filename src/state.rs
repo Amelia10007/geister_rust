@@ -22,8 +22,8 @@ impl Geister {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct OwnedGeister {
-    geister: Geister,
-    owner: Actor,
+    pub geister: Geister,
+    pub owner: Actor,
 }
 
 impl OwnedGeister {

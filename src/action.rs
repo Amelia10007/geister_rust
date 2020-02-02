@@ -3,10 +3,7 @@ use minimax_strategy::{Action, Actor};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum GeisterMovement {
-    Left,
-    Right,
-    Up,
-    Down,
+    Direction(Pair<isize>),
     Clear,
 }
 

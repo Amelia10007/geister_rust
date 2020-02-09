@@ -107,7 +107,7 @@ impl Rule for GeisterRule {
 pub fn clearable_position_of(actor: Actor) -> TableIndex {
     match actor {
         Actor::First => TableIndex::new(0, 0),
-        Actor::Second => TableIndex::new(FIELD_SIZE.x - 1, FIELD_SIZE.y - 1),
+        Actor::Second => FIELD_SIZE - TableIndex::new(1, 1),
     }
 }
 

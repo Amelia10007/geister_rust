@@ -77,6 +77,36 @@ impl GeisterState {
         }
     }
 
+    pub fn iterate_geister_positions_of(
+        &'_ self,
+        actor: Actor,
+    ) -> impl Iterator<Item = TableIndex> + '_ {
+        self.lattices
+            .iter_row()
+            .enumerate()
+            .flat_map(move |(y, row)| {
+                row.iter()
+                    .enumerate()
+                    .filter(move |(_x, lattice)| lattice.map(|l| l.owner) == Some(actor))
+                    .map(move |(x, _)| TableIndex::new(x, y))
+            })
+    }
+
+    pub fn iterate_owned_geister_positions(
+        &'_ self,
+        owned_geister: OwnedGeister,
+    ) -> impl Iterator<Item = TableIndex> + '_ {
+        self.lattices
+            .iter_row()
+            .enumerate()
+            .flat_map(move |(y, row)| {
+                row.iter()
+                    .enumerate()
+                    .filter(move |(_x, lattice)| lattice == &&Some(owned_geister))
+                    .map(move |(x, _)| TableIndex::new(x, y))
+            })
+    }
+
     /// 指定した👻が何体フィールドから取り除かれたか返す．
     pub fn killed_geister_count(&self, owned_geister: OwnedGeister) -> usize {
         self.killed_geister_counts[&owned_geister]

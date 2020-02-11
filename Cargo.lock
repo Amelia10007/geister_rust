@@ -101,6 +101,7 @@ version = "0.1.0"
 dependencies = [
  "cui_gaming 0.1.0",
  "data_structure 0.1.0",
+ "itertools 0.8.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "minimax_strategy 0.1.0",
  "rand 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "ui 0.1.0",

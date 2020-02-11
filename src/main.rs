@@ -6,6 +6,7 @@ mod state;
 use action::*;
 use cui_gaming::*;
 use data_structure::{Pair, TableIndex};
+use evaluation::*;
 use minimax_strategy::{actors, Actor, Rule, Strategy};
 use rand::seq::SliceRandom;
 use rule::*;
@@ -16,6 +17,14 @@ use std::collections::HashMap;
 struct PlayerStrategy {
     /// ユーザーのからのキー入力を監視する．
     keyboard_input: KeyboardInput,
+}
+
+impl PlayerStrategy {
+    fn new() -> Self {
+        Self {
+            keyboard_input: KeyboardInput::new(),
+        }
+    }
 }
 
 impl Strategy<GeisterState, GeisterAction> for PlayerStrategy {
@@ -132,8 +141,8 @@ fn drawable_unit_of(owned_geister: OwnedGeister, geister_index: Option<usize>) -
             Geister::Evil => UnitColor::Red,
         },
         Actor::Second => match owned_geister.geister {
-            Geister::Holy => UnitColor::Cyan,
-            Geister::Evil => UnitColor::Magenta,
+            Geister::Holy => UnitColor::Green,
+            Geister::Evil => UnitColor::Yellow,
         },
     };
     DrawableUnit::from_double_half_char(left_char, right_char, color)
@@ -178,8 +187,8 @@ fn write_state_for(
 
     // フィールドを表示
     let mut index = 0;
-    for row in state.lattices.iter_row() {
-        for &lattice in row.iter() {
+    for (y, row) in state.lattices.iter_row().enumerate() {
+        for (x, &lattice) in row.iter().enumerate() {
             // 各マスに何を表示するか決定する．
             let unit = match lattice {
                 Some(owned_geister) => match viewpoint_actor {
@@ -190,11 +199,21 @@ fn write_state_for(
                             unit
                         } else {
                             DrawableUnit::from_double_half_char('?', ' ', UnitColor::White)
+                            //drawable_unit_of(owned_geister, None)
                         }
                     }
                     None => drawable_unit_of(owned_geister, None),
                 },
-                None => DrawableUnit::from_double_half_char('-', '-', UnitColor::White),
+                None => {
+                    let p = TableIndex::new(x, y);
+                    if p == clearable_position_of(Actor::First) {
+                        DrawableUnit::from_double_half_char('(', ')', UnitColor::White)
+                    } else if p == clearable_position_of(Actor::Second) {
+                        DrawableUnit::from_double_half_char('<', '>', UnitColor::White)
+                    } else {
+                        DrawableUnit::from_double_half_char('-', ' ', UnitColor::White)
+                    }
+                }
             };
             // 表示
             unit.write_to(&mut s)?;
@@ -207,27 +226,29 @@ fn write_state_for(
 }
 
 fn main() {
-    let strategy = PlayerStrategy {
-        keyboard_input: KeyboardInput::new(),
+    let strategies = {
+        let mut map = HashMap::<_, Box<dyn Strategy<GeisterState, GeisterAction>>>::new();
+        map.insert(Actor::First, Box::new(PlayerStrategy::new()));
+        map.insert(Actor::Second, Box::new(GeisterComputerStrategy::new(6)));
+        map
     };
+
     let mut current_state = GeisterState::create_initial_state(select_initial_positions());
     let mut current_actor = Actor::First;
 
     while !GeisterRule::is_game_over(&current_state) {
-        // 相手プレイヤーの情報が見えないように，端末の表示内容をクリア
-        print!("\x1B[2J");
-        // 現在の状態を表示
-        println!("{:?}'s turn", current_actor);
-        match write_state_for(&current_state, Some(current_actor)) {
-            Ok(s) => println!("{}", s),
-            Err(e) => {
-                println!("An error was occurred during writing field: {}", e);
-                break;
+        if current_actor == Actor::First {
+            match write_state_for(&current_state, Some(current_actor)) {
+                Ok(s) => println!("{}", s),
+                Err(e) => {
+                    println!("An error was occurred during writing field: {}", e);
+                    break;
+                }
             }
         }
 
         // 行動選択
-        let action = strategy
+        let action = strategies[&current_actor]
             .select_action(&current_state, current_actor)
             .expect("At least 1 action must be available");
         // 状態遷移とターンプレイヤー交代

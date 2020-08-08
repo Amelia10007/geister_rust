@@ -2,7 +2,7 @@ use crate::{
     Geister, GeisterAction, GeisterMovement, GeisterState, OwnedGeister, AVAILABLE_ACTIONS,
     FIELD_SIZE, INITIAL_GEISTER_COUNT,
 };
-use data_structure::{Pair, TableIndex};
+use data_structure::{Pair, Table, TableIndex};
 use minimax_strategy::{actors, Action, Actor, Rule};
 
 enum GeisterStateAfterAction {
@@ -127,11 +127,12 @@ fn get_geister_state_after_action(
                 position_after_movement.try_cast().ok()?
             };
             // 移動後の位置がフィールドからはみ出ていたり，移動後の位置に自分の他の👻がいる場合は移動できない
-            if state.lattices.is_valid_index(position_after_movement)
-                && state.lattices[position_after_movement].map(|owned_geister| owned_geister.owner)
-                    != Some(action.actor())
-            {
-                Some(GeisterStateAfterAction::OnField(position_after_movement))
+            if let Some(lattice) = state.lattices.get(position_after_movement) {
+                if lattice.map(|owned_geister| owned_geister.owner) != Some(action.actor()) {
+                    Some(GeisterStateAfterAction::OnField(position_after_movement))
+                } else {
+                    None
+                }
             } else {
                 None
             }

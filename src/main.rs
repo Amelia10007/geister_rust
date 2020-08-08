@@ -2,6 +2,7 @@ mod action;
 mod evaluation;
 mod rule;
 mod state;
+mod ui;
 
 use action::*;
 use cui_gaming::*;
@@ -227,9 +228,9 @@ fn write_state_for(
 
 fn main() {
     let strategies = {
-        let mut map = HashMap::<_, Box<dyn Strategy<GeisterState, GeisterAction>>>::new();
+        let mut map = HashMap::<_, Box<dyn Strategy<_, _>>>::new();
         map.insert(Actor::First, Box::new(PlayerStrategy::new()));
-        map.insert(Actor::Second, Box::new(GeisterComputerStrategy::new(6)));
+        map.insert(Actor::Second, Box::new(GeisterComputerStrategy::new(7)));
         map
     };
 

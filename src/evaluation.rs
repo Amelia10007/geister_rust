@@ -62,11 +62,11 @@ fn evaluate_payoff_for_exact_state(actor: Actor, exact_state: &GeisterState) -> 
                     if geister == Geister::Holy {
                         -1
                     } else {
-                        1
+                        4
                     }
                 } else {
                     if geister == Geister::Holy {
-                        1
+                        5
                     } else {
                         -1
                     }
@@ -87,7 +87,7 @@ fn evaluate_payoff_for_exact_state(actor: Actor, exact_state: &GeisterState) -> 
                 })
                 .min()
                 .expect("There must be at least 1 holy geister");
-            payoff -= closest_distance as i32;
+            payoff += closest_distance as i32 * 10;
         }
         // 相手の善良な👻がゴールに近いほど低評価ァ！
         {
@@ -101,7 +101,7 @@ fn evaluate_payoff_for_exact_state(actor: Actor, exact_state: &GeisterState) -> 
                 })
                 .min()
                 .expect("There must be at least 1 holy geister");
-            payoff += closest_distance as i32;
+            payoff -= closest_distance as i32;
         }
         payoff
     }

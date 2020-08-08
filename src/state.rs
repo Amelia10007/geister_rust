@@ -1,4 +1,4 @@
-use data_structure::{Table, TableIndex, TableSize};
+use data_structure::{RowMajorTable, TableIndex, TableSize};
 use minimax_strategy::{actors, Actor, State};
 use std::collections::HashMap;
 
@@ -37,7 +37,7 @@ impl OwnedGeister {
 #[derive(Clone)]
 pub struct GeisterState {
     /// フィールドに存在する👻．
-    pub lattices: Table<Option<OwnedGeister>>,
+    pub lattices: RowMajorTable<Option<OwnedGeister>>,
     /// フィールドから取り除かれた👻の数．
     killed_geister_counts: HashMap<OwnedGeister, usize>,
     /// フィールドから上がった👻の所有者．
@@ -51,7 +51,7 @@ impl GeisterState {
         initial_geister_positions: HashMap<OwnedGeister, Vec<TableIndex>>,
     ) -> Self {
         // フィールドに👻を配置
-        let mut lattices = Table::from_fill(None, FIELD_SIZE);
+        let mut lattices = RowMajorTable::from_fill(None, FIELD_SIZE);
         for (owned_geister, positions) in initial_geister_positions {
             // 👻の数が想定と合っているか確かめる
             assert_eq!(INITIAL_GEISTER_COUNT, positions.len());
